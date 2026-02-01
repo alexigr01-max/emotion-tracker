@@ -89,10 +89,11 @@
       font-weight: 800;
       color: rgba(0,0,0,.82);
       border-top: 1px solid rgba(255,255,255,.65);
+
       display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 6px;
+      flex-direction:column;
+      align-items:flex-start;
+      gap: 4px;
 
       cursor:pointer;
       user-select:none;
@@ -173,6 +174,7 @@
   <div id="block2" class="matrixBlock"></div>
 
   <div class="controls">
+    <button class="btn primary" id="btnShare">Поделиться</button>
     <button class="btn primary" id="btnCopy">Скопировать результат</button>
     <button class="btn danger" id="btnReset">Сбросить выбор</button>
   </div>
@@ -218,6 +220,7 @@
 
   const block1 = document.getElementById("block1");
   const block2 = document.getElementById("block2");
+  const btnShare = document.getElementById("btnShare");
   const btnCopy = document.getElementById("btnCopy");
   const btnReset = document.getElementById("btnReset");
 
@@ -410,6 +413,39 @@
       fallbackBox.scrollIntoView({behavior:"smooth", block:"start"});
     }
   }
+  async function shareResult(){
+    fallbackBox.style.display = "none";
+    if(Object.keys(selected).length === 0){
+      alert("Не выбрано ни одной эмоции.");
+      return;
+    }
+    const text = buildExportText();
+
+    // Штатная “поделиться” панель телефона (Telegram/WhatsApp/почта и т.п.)
+    if(navigator.share){
+      try{
+        await navigator.share({ title: "Трекер эмоций", text });
+        return;
+      }catch(e){
+        // пользователь мог закрыть панель — это не ошибка
+        return;
+      }
+    }
+
+    // Фолбэк: копирование в буфер, иначе показать для ручного копирования
+    try{
+      if(navigator.clipboard){
+        await navigator.clipboard.writeText(text);
+        alert("Результат скопирован в буфер обмена. Вставьте его в нужное приложение.");
+        return;
+      }
+    }catch(e){}
+
+    fallbackText.value = text;
+    fallbackBox.style.display = "block";
+    fallbackBox.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
 
   function resetAll(){
     if(!confirm("Сбросить все выбранные эмоции?")) return;
@@ -418,6 +454,7 @@
     renderMatrix();
   }
 
+  btnShare.addEventListener("click", shareResult);
   btnCopy.addEventListener("click", copyResult);
   btnReset.addEventListener("click", resetAll);
 
