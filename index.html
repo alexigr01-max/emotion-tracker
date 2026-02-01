@@ -7,15 +7,14 @@
   <style>
     :root{
       --blue:#007AFF;
-      --gray:#8E8E93;
       --red:#FF3B30;
 
       --bg:#f5f5f7;
       --shadow: 0 10px 26px rgba(0,0,0,.08);
       --r:14px;
 
-      --gold:#FFD700; /* золото */
-      --star-outline: rgba(0,0,0,.85); /* чёрный контур для пустых */
+      --gold:#FFD700;          /* золото для выбранных */
+      --star-outline:#111111;  /* тонкий чёрный контур для пустых */
     }
     *{box-sizing:border-box}
     body{
@@ -25,30 +24,27 @@
       color:#111;
     }
     header{
-      padding: 14px 16px;
+      padding: 10px 12px;
       position:sticky; top:0;
       background: rgba(245,245,247,.92);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid rgba(0,0,0,.06);
       z-index:10;
     }
-    h1{margin:0;font-size:18px}
-    h2{margin:0;font-size:16px}
-    .wrap{padding: 14px 16px 24px;}
+    h1{margin:0;font-size:16px}
 
-    .screen{display:none}
-    .screen.active{display:block}
+    .wrap{padding: 10px 12px 18px;}
 
     .controls{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      margin-top: 12px;
+      margin-top: 10px;
     }
     .btn{
       border:0;
       border-radius: 12px;
-      padding: 12px 14px;
+      padding: 11px 12px;
       font-size: 14px;
       font-weight: 800;
       color:#fff;
@@ -59,18 +55,14 @@
     }
     .btn:active{ transform: scale(.98); }
     .btn.primary{ background: var(--blue); }
-    .btn.gray{ background: var(--gray); }
     .btn.danger{ background: var(--red); }
 
-    /* ===== Экран 1: матрица 3x2 ===== */
+    /* ===== Экран: матрица 3x2 (всегда), чтобы на телефоне были видны ВСЕ группы сразу ===== */
     .matrixBlock{
       display:grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-    @media (max-width: 520px){
-      .matrixBlock{ grid-template-columns: 1fr; }
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .groupColumn{
@@ -78,33 +70,68 @@
       overflow:hidden;
       box-shadow: var(--shadow);
       border: 2px solid transparent;
-      user-select:none;
-      cursor:pointer;
-      transition: transform .12s ease, border-color .25s ease;
       background: #fff;
+      transition: border-color .25s ease;
     }
-    .groupColumn:active{ transform: scale(.99); }
     .groupColumn.selected{ border: 3px solid var(--blue); }
 
     .groupHeader{
-      padding: 10px 10px;
+      padding: 8px 8px;
       text-align:center;
       font-weight: 900;
       color: rgba(255,255,255,.95);
       letter-spacing: .2px;
+      font-size: 14px;
     }
 
     .row{
-      padding: 9px 10px;
-      text-align:center;
-      font-weight: 700;
-      color: rgba(0,0,0,.78);
+      padding: 7px 8px;
+      font-weight: 800;
+      color: rgba(0,0,0,.82);
       border-top: 1px solid rgba(255,255,255,.65);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 6px;
 
-      /* ЭМОЦИИ НА ЭКРАНЕ 1 НЕКЛИКАБЕЛЬНЫ */
-      pointer-events: none;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease;
+    }
+    .row:active{ transform: scale(.99); }
+
+    .rowName{
+      font-size: 12.5px;
+      line-height: 1.15;
+      word-break: break-word;
     }
 
+    /* звёзды: 5 отдельных символов */
+    .stars{
+      display:flex;
+      gap: 1px;
+      flex: 0 0 auto;
+      align-items:center;
+    }
+    .star{
+      font-size: 14px;
+      line-height: 1;
+      user-select:none;
+    }
+    .star.filled{
+      color: var(--gold);
+      text-shadow: 0 1px 1px rgba(0,0,0,.15);
+    }
+    .star.empty{
+      color: rgba(255,255,255,.10); /* почти “без заливки” */
+      text-shadow:
+        -0.5px 0 var(--star-outline),
+         0.5px 0 var(--star-outline),
+         0 -0.5px var(--star-outline),
+         0  0.5px var(--star-outline);
+    }
+
+    /* fallback для ручного копирования */
     .card{
       background:#fff;
       border-radius: var(--r);
@@ -113,7 +140,6 @@
       padding: 12px;
       margin-top: 12px;
     }
-    .note{font-size:13px;color:rgba(0,0,0,.65);line-height:1.35}
     textarea{
       width:100%;
       min-height: 140px;
@@ -125,63 +151,14 @@
       line-height: 1.35;
     }
 
-    /* ===== Экран 2 ===== */
-    .emotionList{
-      display:grid;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .emotionTile{
-      border-radius: var(--r);
-      padding: 12px 12px;
-      box-shadow: var(--shadow);
-      border: 2px solid transparent;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      user-select:none;
-      cursor:pointer;
-      transition: transform .12s ease, border-color .25s ease;
-      color: rgba(255,255,255,.92);
-      font-weight: 900;
-    }
-    .emotionTile:active{ transform: scale(.98); }
-    .emotionTile.selected{ border: 3px solid var(--blue); }
-
-    .emotionName{
-      font-size: 15px;
-      line-height: 1.2;
-      word-break: break-word;
-      font-weight: 900;
-      text-shadow: 0 1px 2px rgba(0,0,0,.12);
-    }
-
-    /* звёзды: 5 отдельных символов */
-    .stars{
-      display:flex;
-      gap: 2px;
-      flex: 0 0 auto;
-      align-items:center;
-      text-shadow: 0 1px 2px rgba(0,0,0,.20);
-    }
-    .star{
-      font-size: 18px;
-      line-height: 1;
-      letter-spacing: 0;
-      user-select:none;
-    }
-    .star.filled{
-      color: var(--gold);
-    }
-    .star.empty{
-      color: rgba(255,255,255,.25); /* почти “без заливки” */
-      /* тонкая “обводка” через тени */
-      text-shadow:
-        -0.6px 0 var(--star-outline),
-         0.6px 0 var(--star-outline),
-         0 -0.6px var(--star-outline),
-         0  0.6px var(--star-outline);
+    /* Чуть плотнее на очень узких экранах */
+    @media (max-width: 390px){
+      .wrap{padding: 8px 10px 16px;}
+      .matrixBlock{gap: 6px;}
+      .groupHeader{font-size: 13px; padding: 7px 6px;}
+      .row{padding: 6px 6px;}
+      .rowName{font-size: 12px;}
+      .star{font-size: 13px;}
     }
   </style>
 </head>
@@ -191,60 +168,42 @@
 </header>
 
 <div class="wrap">
-  <section id="screen-groups" class="screen active">
-    <div class="controls" style="margin-top:0">
-      <button class="btn gray" id="btnLoad">Загрузить файл эмоций</button>
-    </div>
+  <!-- Матрица: выбор делается прямо на этом экране -->
+  <div id="block1" class="matrixBlock"></div>
+  <div id="block2" class="matrixBlock"></div>
 
-    <div id="topBlock" class="matrixBlock"></div>
-    <div id="bottomBlock" class="matrixBlock"></div>
+  <div class="controls">
+    <button class="btn primary" id="btnCopy">Скопировать результат</button>
+    <button class="btn danger" id="btnReset">Сбросить выбор</button>
+  </div>
 
+  <div id="fallbackBox" class="card" style="display:none;">
+    <div style="font-weight:900;margin-bottom:8px;">Скопируйте вручную:</div>
+    <textarea id="fallbackText" readonly></textarea>
     <div class="controls">
-      <button class="btn primary" id="btnCopy">Скопировать результат</button>
-      <button class="btn danger" id="btnReset">Сбросить выбор</button>
+      <button class="btn primary" id="btnSelectText">Выделить текст</button>
+      <button class="btn danger" id="btnHideFallback">Скрыть</button>
     </div>
-
-    <div id="fallbackBox" class="card" style="display:none;">
-      <div style="font-weight:900;margin-bottom:8px;">Не удалось автоматически скопировать — скопируйте вручную:</div>
-      <textarea id="fallbackText" readonly></textarea>
-      <div class="controls">
-        <button class="btn gray" id="btnSelectText">Выделить текст</button>
-        <button class="btn gray" id="btnHideFallback">Скрыть</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="note">
-        Приложение пытается загрузить файл <b>emotions.txt</b> рядом с index.html.
-        Если вы открываете локально (file://) и загрузка блокируется — нажмите “Загрузить файл эмоций” и выберите ваш TXT.
-      </div>
-    </div>
-
-    <input id="fileInput" type="file" accept=".txt,text/plain" style="display:none;" />
-  </section>
-
-  <section id="screen-emotions" class="screen">
-    <div class="controls" style="margin-top:0">
-      <button class="btn gray" id="btnBack">← К группам</button>
-    </div>
-    <h2 id="groupTitle" style="margin-top:12px;"></h2>
-    <div id="emotionList" class="emotionList"></div>
-  </section>
+  </div>
 </div>
 
 <script>
+  // Цвета (как в ТЗ)
   const GROUP_COLORS = {
-    anger: "#DB5C70",
     grief: "#5C4033",
     fear:  "#8B7F7A",
     hate:  "#8B6080",
+    anger: "#DB5C70",
     joy:   "#FFB430",
     love:  "#5AD418",
   };
 
-  const TOP_ORDER = ["fear", "hate", "anger"];
-  const BOTTOM_ORDER = ["grief", "joy", "love"];
+  // Требуемый порядок групп: горе, страх, ненависть, гнев, радость, любовь
+  // Разбивка по строкам 3+3, чтобы ВСЕ группы были на экране 1 сразу.
+  const ROW1 = ["grief", "fear", "hate"];
+  const ROW2 = ["anger", "joy", "love"];
 
+  // Сопоставление русских названий групп -> id
   const NAME_TO_ID = {
     "Горе": "grief",
     "Страх": "fear",
@@ -254,37 +213,23 @@
     "Любовь": "love",
   };
 
-  let groups = [];
-  const selected = Object.create(null);
-  let currentGroupId = null;
+  let groups = []; // [{id,name,color,emotions:[...]}]
+  const selected = Object.create(null); // selected[groupId][emotion]=1..5
 
-  const screenGroups = document.getElementById("screen-groups");
-  const screenEmotions = document.getElementById("screen-emotions");
-  const topBlock = document.getElementById("topBlock");
-  const bottomBlock = document.getElementById("bottomBlock");
-  const groupTitle = document.getElementById("groupTitle");
-  const emotionList = document.getElementById("emotionList");
-
-  const btnBack = document.getElementById("btnBack");
+  const block1 = document.getElementById("block1");
+  const block2 = document.getElementById("block2");
   const btnCopy = document.getElementById("btnCopy");
   const btnReset = document.getElementById("btnReset");
-  const btnLoad = document.getElementById("btnLoad");
 
   const fallbackBox = document.getElementById("fallbackBox");
   const fallbackText = document.getElementById("fallbackText");
   const btnSelectText = document.getElementById("btnSelectText");
   const btnHideFallback = document.getElementById("btnHideFallback");
 
-  const fileInput = document.getElementById("fileInput");
-
+  // Utils
   const pad2 = (n) => String(n).padStart(2, "0");
   function formatDateTime(d){
     return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-  }
-
-  function groupSelectedCount(groupId){
-    const m = selected[groupId];
-    return m ? Object.keys(m).length : 0;
   }
 
   function lightenColorHex(hex, alpha){
@@ -292,6 +237,11 @@
     const g = parseInt(hex.slice(3,5),16);
     const b = parseInt(hex.slice(5,7),16);
     return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  function groupSelectedCount(groupId){
+    const m = selected[groupId];
+    return m ? Object.keys(m).length : 0;
   }
 
   function parseEmotionsTxt(txt){
@@ -330,74 +280,15 @@
       byId[g.id] = { ...g, color: GROUP_COLORS[g.id] || "#444" };
     }
 
-    return [
-      {id:"fear",  name:"Страх"},
-      {id:"hate",  name:"Ненависть"},
-      {id:"anger", name:"Гнев"},
-      {id:"grief", name:"Горе"},
-      {id:"joy",   name:"Радость"},
-      {id:"love",  name:"Любовь"},
-    ].map(x => byId[x.id] ? byId[x.id] : ({...x, emotions:[], color: GROUP_COLORS[x.id]}));
+    // вернуть все 6 групп в порядке (на случай, если в txt какой-то блок пустой)
+    return ["grief","fear","hate","anger","joy","love"]
+      .map(id => byId[id] ? byId[id] : ({ id, name: Object.keys(NAME_TO_ID).find(k => NAME_TO_ID[k]===id) || id, emotions:[], color: GROUP_COLORS[id] }));
   }
 
   async function loadFromDefaultTxt(){
     const r = await fetch("emotions.txt", { cache: "no-store" });
     if(!r.ok) throw new Error("Не удалось загрузить emotions.txt");
     return parseEmotionsTxt(await r.text());
-  }
-
-  function loadFromUserTxtFile(file){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try{ resolve(parseEmotionsTxt(String(reader.result || ""))); }
-        catch(e){ reject(new Error("Не удалось разобрать файл: " + e.message)); }
-      };
-      reader.onerror = () => reject(new Error("Ошибка чтения файла"));
-      reader.readAsText(file, "utf-8");
-    });
-  }
-
-  function renderMatrix(){
-    topBlock.innerHTML = "";
-    bottomBlock.innerHTML = "";
-
-    const byId = Object.create(null);
-    for(const g of groups) byId[g.id] = g;
-
-    for(const id of TOP_ORDER){
-      if(byId[id]) topBlock.appendChild(renderGroupColumn(byId[id]));
-    }
-    for(const id of BOTTOM_ORDER){
-      if(byId[id]) bottomBlock.appendChild(renderGroupColumn(byId[id]));
-    }
-  }
-
-  function renderGroupColumn(g){
-    const count = groupSelectedCount(g.id);
-
-    const col = document.createElement("div");
-    col.className = "groupColumn" + (count > 0 ? " selected" : "");
-    col.addEventListener("click", () => openGroup(g.id));
-
-    const header = document.createElement("div");
-    header.className = "groupHeader";
-    header.style.background = g.color;
-    header.textContent = g.name;
-    col.appendChild(header);
-
-    const base1 = lightenColorHex(g.color, 0.22);
-    const base2 = lightenColorHex(g.color, 0.16);
-
-    (g.emotions || []).forEach((e, idx) => {
-      const row = document.createElement("div");
-      row.className = "row";
-      row.textContent = e;
-      row.style.background = (idx % 2 === 0) ? base1 : base2;
-      col.appendChild(row);
-    });
-
-    return col;
   }
 
   function renderStars(intensity){
@@ -413,56 +304,71 @@
     return wrap;
   }
 
-  function renderEmotions(groupId){
-    const g = groups.find(x => x.id === groupId);
-    groupTitle.textContent = g ? `Группа: ${g.name}` : "Группа";
-    emotionList.innerHTML = "";
-    if(!g) return;
-
-    for(const e of g.emotions){
-      const intensity = (selected[groupId] && selected[groupId][e]) ? selected[groupId][e] : 0;
-
-      const tile = document.createElement("div");
-      tile.className = "emotionTile" + (intensity > 0 ? " selected" : "");
-      tile.style.background = g.color;
-
-      const name = document.createElement("div");
-      name.className = "emotionName";
-      name.textContent = e;
-
-      const starsNode = renderStars(intensity);
-
-      tile.appendChild(name);
-      tile.appendChild(starsNode);
-
-      tile.addEventListener("click", () => {
-        const next = intensity >= 5 ? 0 : intensity + 1;
-        if(next === 0){
-          if(selected[groupId]) delete selected[groupId][e];
-          if(selected[groupId] && Object.keys(selected[groupId]).length === 0) delete selected[groupId];
-        }else{
-          if(!selected[groupId]) selected[groupId] = Object.create(null);
-          selected[groupId][e] = next;
-        }
-        renderEmotions(groupId);
-      });
-
-      emotionList.appendChild(tile);
+  function updateIntensity(groupId, emotion, currentIntensity){
+    const next = currentIntensity >= 5 ? 0 : currentIntensity + 1;
+    if(next === 0){
+      if(selected[groupId]) delete selected[groupId][emotion];
+      if(selected[groupId] && Object.keys(selected[groupId]).length === 0) delete selected[groupId];
+    }else{
+      if(!selected[groupId]) selected[groupId] = Object.create(null);
+      selected[groupId][emotion] = next;
     }
   }
 
-  function openGroup(groupId){
-    currentGroupId = groupId;
-    screenGroups.classList.remove("active");
-    screenEmotions.classList.add("active");
-    renderEmotions(groupId);
+  function renderMatrix(){
+    block1.innerHTML = "";
+    block2.innerHTML = "";
+
+    const byId = Object.create(null);
+    for(const g of groups) byId[g.id] = g;
+
+    for(const id of ROW1){
+      if(byId[id]) block1.appendChild(renderGroupColumn(byId[id]));
+    }
+    for(const id of ROW2){
+      if(byId[id]) block2.appendChild(renderGroupColumn(byId[id]));
+    }
   }
 
-  function backToMatrix(){
-    currentGroupId = null;
-    screenEmotions.classList.remove("active");
-    screenGroups.classList.add("active");
-    renderMatrix();
+  function renderGroupColumn(g){
+    const col = document.createElement("div");
+    col.className = "groupColumn" + (groupSelectedCount(g.id) > 0 ? " selected" : "");
+
+    const header = document.createElement("div");
+    header.className = "groupHeader";
+    header.style.background = g.color;
+    header.textContent = g.name;
+    col.appendChild(header);
+
+    const base1 = lightenColorHex(g.color, 0.22);
+    const base2 = lightenColorHex(g.color, 0.16);
+
+    (g.emotions || []).forEach((emotion, idx) => {
+      const intensity = (selected[g.id] && selected[g.id][emotion]) ? selected[g.id][emotion] : 0;
+
+      const row = document.createElement("div");
+      row.className = "row";
+      row.style.background = (idx % 2 === 0) ? base1 : base2;
+
+      const name = document.createElement("div");
+      name.className = "rowName";
+      name.textContent = emotion;
+
+      const stars = renderStars(intensity);
+
+      row.appendChild(name);
+      row.appendChild(stars);
+
+      row.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        updateIntensity(g.id, emotion, intensity);
+        renderMatrix(); // быстрое переотрисовывание, чтобы обновить звёзды + рамку группы
+      });
+
+      col.appendChild(row);
+    });
+
+    return col;
   }
 
   function exportStarsText(i){
@@ -471,7 +377,7 @@
 
   function buildExportText(){
     const lines = [formatDateTime(new Date())];
-    const order = [...TOP_ORDER, ...BOTTOM_ORDER];
+    const order = ["grief","fear","hate","anger","joy","love"];
 
     for(const id of order){
       const g = groups.find(x => x.id === id);
@@ -509,46 +415,26 @@
     if(!confirm("Сбросить все выбранные эмоции?")) return;
     for(const k of Object.keys(selected)) delete selected[k];
     fallbackBox.style.display = "none";
-    if(screenEmotions.classList.contains("active") && currentGroupId){
-      renderEmotions(currentGroupId);
-    }else{
-      renderMatrix();
-    }
+    renderMatrix();
   }
 
-  btnBack.addEventListener("click", backToMatrix);
   btnCopy.addEventListener("click", copyResult);
   btnReset.addEventListener("click", resetAll);
 
   btnSelectText.addEventListener("click", () => { fallbackText.focus(); fallbackText.select(); });
   btnHideFallback.addEventListener("click", () => { fallbackBox.style.display = "none"; });
 
-  btnLoad.addEventListener("click", () => fileInput.click());
-  fileInput.addEventListener("change", async () => {
-    const file = fileInput.files && fileInput.files[0];
-    if(!file) return;
-    try{
-      groups = await loadFromUserTxtFile(file);
-      backToMatrix();
-    }catch(e){
-      alert(e.message);
-    }finally{
-      fileInput.value = "";
-    }
-  });
-
   (async function init(){
     try{
       groups = await loadFromDefaultTxt();
     }catch(e){
-      groups = [
-        {id:"fear",  name:"Страх",     emotions:[], color: GROUP_COLORS.fear},
-        {id:"hate",  name:"Ненависть", emotions:[], color: GROUP_COLORS.hate},
-        {id:"anger", name:"Гнев",      emotions:[], color: GROUP_COLORS.anger},
-        {id:"grief", name:"Горе",      emotions:[], color: GROUP_COLORS.grief},
-        {id:"joy",   name:"Радость",   emotions:[], color: GROUP_COLORS.joy},
-        {id:"love",  name:"Любовь",    emotions:[], color: GROUP_COLORS.love},
-      ];
+      // если файл не загрузился, показываем пустую матрицу (но на GitHub Pages fetch работает)
+      groups = ["grief","fear","hate","anger","joy","love"].map(id => ({
+        id,
+        name: Object.keys(NAME_TO_ID).find(k => NAME_TO_ID[k]===id) || id,
+        emotions: [],
+        color: GROUP_COLORS[id]
+      }));
     }
     renderMatrix();
   })();
